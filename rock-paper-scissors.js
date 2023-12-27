@@ -1,3 +1,56 @@
+let startButton = document.querySelector("#start");
+let choices = document.querySelector("#choices");
+
+choices.addEventListener("click", choicesCallback);
+let playerScore = 0;
+let computerScore = 0;
+let endGameResult = false;
+let gameStart = true;
+let resultSection = document.querySelector("#result");
+function choicesCallback(event) {
+  if(gameStart) {
+    let singleRoundResult = document.createElement("h1");
+    singleRoundResult.setAttribute("id", "singleRoundResult");
+    resultSection.appendChild(singleRoundResult);
+    gameStart = false;
+  }
+  if(endGameResult) {
+    const output = document.querySelector("#endGameResult");
+    const singleRoundResult = document.querySelector("#singleRoundResult");
+    resultSection.removeChild(output);
+    resultSection.removeChild(singleRoundResult);
+    endGameResult = false;
+    gameStart = true;
+  }
+  let result = playRound(event.target.id, getComputerChoice());
+  playerScore += result.includes("Win") ? 1 : 0;
+  computerScore += result.includes("Lose") ? 1 : 0;
+  updateScore(result);
+  endGameResult = endGame();
+}
+
+function updateScore(result) {
+  let player = document.querySelector("body div h1#player");
+  let computer = document.querySelector("body div h1#computer");
+  player.textContent = `Player Score: ${playerScore}`;
+  computer.textContent = `Computer Score: ${computerScore}`;
+  let singleRoundResult = document.querySelector("#singleRoundResult");
+  singleRoundResult.textContent = result;
+};
+
+function endGame() {
+  if(playerScore === 5 || computerScore === 5) {
+    let endGameResult = document.createElement("h1");
+    endGameResult.setAttribute("id", "endGameResult");
+    endGameResult.textContent = playerScore === 5 ? "You won" : "You lost";
+    resultSection.appendChild(endGameResult);
+    playerScore = 0;
+    computerScore = 0;
+    return true;
+  }
+  return false;
+}
+
 function getComputerChoice() {
   let randomNumber = Math.floor(Math.random() * 100);
   switch (randomNumber % 3) {
@@ -55,61 +108,4 @@ function playRound(playerSelection, computerSelection) {
       return "You Lose! Scissors beat Paper";
     }
   }
-}
-
-function game() {
-  console.log("The game begins");
-  let playerScore = 0;
-  let computerScore = 0;
-  let result;
-  for (let i = 0; i < 5; ++i) {
-    do {
-      let playerSelection = prompt("Please choose Rock, Paper or Scissors");
-      // const readline = require('readline').createInterface({
-      //   input: process.stdin,
-      //   output: process.stdout
-      // });
-      
-      // readline.question(, name => {
-      //   playerSelection = name;
-      // });
-      result = playRound(playerSelection, getComputerChoice());
-      console.log(result);
-      if (result.includes("Win")) {
-        ++playerScore;
-      }
-      else if (result.includes("Lose")) {
-        ++computerScore;
-      }
-      console.log("The current result is: ");
-      console.log("Player: ", playerScore, "\nComputer: ", computerScore);
-    } while (result.includes("It's"));
-    if(playerScore === 3 || computerScore === 3) {
-      break;
-    }
-  }
-
-  if(playerScore > computerScore) {
-    console.log("You have won the best of 5");
-  }
-  
-  if(playerScore < computerScore) {
-    console.log("You have lost the best of 5");
-  }
-
-  let playAgain;
-  do {
-    playAgain = prompt("Do you want to play again? (y/n)");
-    if(playAgain === "y") {
-      game();
-    }
-    else if(playAgain === "n") {
-      console.log("Thank you very much. See you next time");
-      break;
-    }
-    else {
-      console.log("Please choose y or n only.");
-    }
-  }
-  while (playAgain !== "y")
 }
